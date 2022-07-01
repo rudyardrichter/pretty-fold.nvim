@@ -22,6 +22,7 @@ local foldmethods = {
 
 local default_config = {
    fill_char = '•',
+   fill_left = true,
    remove_fold_markers = true,
 
    -- Keep the indentation of the content of the fold string.

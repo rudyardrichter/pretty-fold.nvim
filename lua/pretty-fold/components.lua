@@ -343,9 +343,15 @@ function M.content(config)
    if config.keep_indentation then
       local opening_blank_substr = content:match('^%s%s+')
       if opening_blank_substr then
+        local prefix_char
+        if config.fill_left then
+          prefix_char = config.fill_char
+        else
+          prefix_char = ' '
+        end
          content = content:gsub(
             opening_blank_substr,
-            config.fill_char:rep(#opening_blank_substr - 1)..' ',
+            prefix_char:rep(#opening_blank_substr - 1)..' ',
             -- config.fill_char:rep(fn.strdisplaywidth(opening_blank_substr) - 1)..' ',
             1)
       end
@@ -361,11 +367,16 @@ function M.content(config)
    -- Exchange all occurrences of multiple spaces inside the text with
    -- 'fill_char', like this:
    -- "//      Text"  ->  "// ==== Text"
+   local first = true
    for blank_substr in content:gmatch('%s%s%s+') do
-      content = content:gsub(
-         blank_substr,
-         ' '..string.rep(config.fill_char, #blank_substr - 2)..' ',
-         1)
+     -- skip first match if not `fill_left` to preserve leading spaces
+      if config.fill_left or not first then
+        content = content:gsub(
+           blank_substr,
+           ' '..string.rep(config.fill_char, #blank_substr - 2)..' ',
+           1)
+      end
+      first = false
    end
 
    return content
